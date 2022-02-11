@@ -1,0 +1,20 @@
+{
+    "name": "MeArm机械臂",
+    "version": "1.0.0",
+    "description": "micro:bit使用基于PCA9685芯片的扩展板控制MeArm机械臂",
+    "license": "MIT",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "README.md",
+        "mearm.ts",
+        "pxt.json",
+        "_locales/zh-cn/MeArm-strings.json"
+
+    ],
+    "testFiles": [
+        "tests.ts"
+    ],
+    "public": true
+}

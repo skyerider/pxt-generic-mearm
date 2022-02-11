@@ -1,0 +1,11 @@
+{
+
+  "mearm.Servo|block": "舵机(180)|编号 %num|角度 %value",
+  "mearm.Servo2|block": "舵机(270)|编号 %num|角度 %value"
+
+  
+
+  
+
+ 
+}
