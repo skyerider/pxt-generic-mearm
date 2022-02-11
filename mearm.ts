@@ -148,14 +148,17 @@ namespace mearm {
    * 配置舵机
    */
   //% weight=90
+  //% blockGap=10
+  //% minAgl.min=0 minAgl.max=180 maxAgl.min=0 maxAgl.max=180 defaultAngle.min=0 defaultAngle.max=180
+  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=config_servo block="配置|%servo=MearmServo|使用引脚|%pin=ServoPin|最小角度|%min|最大角度|%max|初始角度|%defaultAngle|方向|%dir=Direction|"
-  export function configServo(servo: MearmServo,pin: ServoPin, min: number, max: number,defaultAngle: number,dir: Direction){
+  export function configServo(servo: MearmServo,pin: ServoPin, minAgl: number, maxAgl: number,defaultAngle: number,dir: Direction){
     let _servo = servos[servo];
     _servo.servo=pin;
     _servo.currentAngle=defaultAngle;
     _servo.direction=dir;
-    _servo.maxAngle=max;
-    _servo.minAngle=min;
+    _servo.maxAngle=minAgl;
+    _servo.minAngle=maxAgl;
     resetServoAngle(servo);
   }
   
@@ -163,6 +166,9 @@ namespace mearm {
    * 转动指定舵机到一个绝对角度
    */
   //% weight=90
+  //% blockGap=10
+  //% angle.min=0 angle.max=180
+  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=move_to block="转动|%servo=MearmServo|到|%angle|度位置"
   export function moveToAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, angle);
@@ -172,6 +178,9 @@ namespace mearm {
    * 让指定舵机从当前位置转动一个角度
    */
   //% weight=80
+  //% blockGap=10
+  //% angle.min=0 angle.max=180
+  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=move_by block="控制|%servo=MearmServo|转动|%angle|度"
   export function moveByAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, servos[servo].currentAngle + angle);
