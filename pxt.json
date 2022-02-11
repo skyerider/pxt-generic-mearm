@@ -1,5 +1,5 @@
 {
-    "name": "MeArm机械臂",
+    "name": "MeArm机械臂 by 文小闲@创之翼",
     "version": "1.0.0",
     "description": "micro:bit使用基于PCA9685芯片的扩展板控制MeArm机械臂",
     "license": "MIT",
