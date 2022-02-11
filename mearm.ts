@@ -1,3 +1,32 @@
+enum MearmServo {
+  //% block="基座舵机"
+  Base = 0,
+  //% block="右边舵机"
+  Right = 1,
+  //% block="左边舵机"
+  Left = 2,
+  //% block="机械爪舵机"
+  Grip = 3
+}
+enum Direction {        
+  //% block="逆时针"
+  counterclockwise = 0,
+  //% block="顺时针"
+  clockwise = 1,
+
+}
+
+enum ServoPin {        
+  S1 = 0,
+  S2,
+  S3,
+  S4,
+  S5,
+  S6,
+  S7,
+  S8
+}
+
 /**
  * 使用PCA9685芯片的Micro:bit扩展板控制MeArm机械臂
  */
@@ -13,35 +42,6 @@ namespace mearm {
   const PRESCALE = 0xFE;
 
   let initialized = false;
-
-  export enum MearmServo {
-    //% block="基座舵机"
-    Base = 0,
-    //% block="右边舵机"
-    Right = 1,
-    //% block="左边舵机"
-    Left = 2,
-    //% block="机械爪舵机"
-    Grip = 3
-  }
-  export enum Direction {        
-    //% block="逆时针"
-    counterclockwise = 0,
-    //% block="顺时针"
-    clockwise = 1,
-  
-  }
-  
-  export enum ServoPin {        
-    S1 = 0,
-    S2,
-    S3,
-    S4,
-    S5,
-    S6,
-    S7,
-    S8
-  }
 
   function i2cwrite(addr: number, reg: number, value: number) {
     let buf = pins.createBuffer(2)
@@ -150,7 +150,6 @@ namespace mearm {
   //% weight=90
   //% blockGap=10
   //% minAgl.min=0 minAgl.max=180 maxAgl.min=0 maxAgl.max=180 defaultAngle.min=0 defaultAngle.max=180
-  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=config_servo block="配置|%servo=MearmServo|使用引脚|%pin=ServoPin|最小角度|%min|最大角度|%max|初始角度|%defaultAngle|方向|%dir=Direction|"
   export function configServo(servo: MearmServo,pin: ServoPin, minAgl: number, maxAgl: number,defaultAngle: number,dir: Direction){
     let _servo = servos[servo];
@@ -168,7 +167,6 @@ namespace mearm {
   //% weight=90
   //% blockGap=10
   //% angle.min=0 angle.max=180
-  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=move_to block="转动|%servo=MearmServo|到|%angle|度位置"
   export function moveToAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, angle);
@@ -180,7 +178,6 @@ namespace mearm {
   //% weight=80
   //% blockGap=10
   //% angle.min=0 angle.max=180
-  //% name.fieldEditor="gridpicker" name.fieldOptions.columns=20  
   //% blockId=move_by block="控制|%servo=MearmServo|转动|%angle|度"
   export function moveByAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, servos[servo].currentAngle + angle);
