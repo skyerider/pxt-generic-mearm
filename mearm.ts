@@ -1,37 +1,38 @@
-enum MearmServo {
-  //% block="基座舵机"
-  Base = 0,
-  //% block="右边舵机"
-  Right = 1,
-  //% block="左边舵机"
-  Left = 2,
-  //% block="机械爪舵机"
-  Grip = 3
-}
-enum Direction {        
-  //% block="逆时针"
-  counterclockwise = 0,
-  //% block="顺时针"
-  clockwise = 1,
-
-}
-
-enum ServoPin {        
-  S1 = 0,
-  S2,
-  S3,
-  S4,
-  S5,
-  S6,
-  S7,
-  S8
-}
-
 /**
  * 使用PCA9685芯片的Micro:bit扩展板控制MeArm机械臂
  */
 //% weight=80 color=#00A3E0
 namespace mearm {
+
+  export enum MearmServo {
+    //% block="基座舵机"
+    Base = 0,
+    //% block="右边舵机"
+    Right = 1,
+    //% block="左边舵机"
+    Left = 2,
+    //% block="机械爪舵机"
+    Grip = 3
+  }
+  export enum Direction {        
+    //% block="逆时针"
+    counterclockwise = 0,
+    //% block="顺时针"
+    clockwise = 1,
+  
+  }
+  
+  export enum ServoPin {        
+    S1 = 0,
+    S2,
+    S3,
+    S4,
+    S5,
+    S6,
+    S7,
+    S8
+  }
+
   const PCA9685_ADD = 0x40;
   const MODE1 = 0x00;
   const LED0_ON_L = 0x06;
@@ -150,7 +151,7 @@ namespace mearm {
   //% weight=90
   //% blockGap=10
   //% minAgl.min=0 minAgl.max=180 maxAgl.min=0 maxAgl.max=180 defaultAngle.min=0 defaultAngle.max=180
-  //% blockId=config_servo block="配置|%servo=MearmServo|使用引脚|%pin=ServoPin|最小角度|%min|最大角度|%max|初始角度|%defaultAngle|方向|%dir=Direction|"
+  //% blockId=config_servo block="配置 %servo=MearmServo 使用引脚 %pin=ServoPin |最小角度 %minAgl 最大角度 %maxAgl |初始角度 %defaultAngle 方向 %dir=Direction"
   export function configServo(servo: MearmServo,pin: ServoPin, minAgl: number, maxAgl: number,defaultAngle: number,dir: Direction){
     let _servo = servos[servo];
     _servo.servo=pin;
