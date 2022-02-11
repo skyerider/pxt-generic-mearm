@@ -25,7 +25,7 @@ namespace mearm {
 
   let initialized = false;
 
-  export enum ServoPin {        
+  enum ServoPin {        
     S1 = 0,
     S2,
     S3,
@@ -34,6 +34,14 @@ namespace mearm {
     S6,
     S7,
     S8
+  }
+
+  enum Direction {        
+    //% block="逆时针"
+    counterclockwise = 0,
+    //% block="顺时针"
+    clockwise = 1,
+
   }
 
   function i2cwrite(addr: number, reg: number, value: number) {
@@ -92,10 +100,10 @@ namespace mearm {
   }
 
   let servos = [
-    {minAngle: 0,   maxAngle: 179, currentAngle: 90, centerAngle: 90, servo: ServoPin.S1,  direction: 1},
-    {minAngle: 0,   maxAngle: 135, currentAngle: 90, centerAngle: 90, servo: ServoPin.S2,  direction: 1},
-    {minAngle: 30,  maxAngle: 160, currentAngle: 90, centerAngle: 90, servo: ServoPin.S3,  direction: 1},
-    {minAngle: 0,   maxAngle: 89,  currentAngle: 90, centerAngle: 90, servo: ServoPin.S4,  direction: 1}
+    {minAngle: 0,   maxAngle: 179, currentAngle: 90, centerAngle: 90, servo: ServoPin.S1,  direction: Direction.clockwise},
+    {minAngle: 0,   maxAngle: 135, currentAngle: 90, centerAngle: 90, servo: ServoPin.S2,  direction: Direction.clockwise},
+    {minAngle: 30,  maxAngle: 160, currentAngle: 90, centerAngle: 90, servo: ServoPin.S3,  direction: Direction.clockwise},
+    {minAngle: 0,   maxAngle: 89,  currentAngle: 90, centerAngle: 90, servo: ServoPin.S4,  direction: Direction.clockwise}
   ];
 
   function setServoAngle(servo: MearmServo, angle: number){
@@ -141,8 +149,8 @@ namespace mearm {
    * 配置舵机
    */
   //% weight=90
-  //% blockId=config_servo block="配置|%servo=MearmServo|to|%angle|degrees"
-  export function configServo(servo: MearmServo,pin: ServoPin, min: number, max: number,defaultAngle: number,dir: number){
+  //% blockId=config_servo block="配置|%servo=MearmServo|使用引脚|%pin=ServoPin|最小角度|%min|最大角度|%max|初始角度|%defaultAngle|方向|%dir=Direction|"
+  export function configServo(servo: MearmServo,pin: ServoPin, min: number, max: number,defaultAngle: number,dir: Direction){
     let _servo = servos[servo];
     _servo.servo=pin;
     _servo.currentAngle=defaultAngle;
@@ -156,7 +164,7 @@ namespace mearm {
    * 转动指定舵机到一个绝对角度
    */
   //% weight=90
-  //% blockId=move_to block="转动|%servo=MearmServo|到|%angle|度"
+  //% blockId=move_to block="转动|%servo=MearmServo|到|%angle|度位置"
   export function moveToAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, angle);
   }
@@ -165,7 +173,7 @@ namespace mearm {
    * 让指定舵机从当前位置转动一个角度
    */
   //% weight=80
-  //% blockId=move_by block="让|%servo=MearmServo|转动|%angle|度"
+  //% blockId=move_by block="|%servo=MearmServo|转动|%angle|度"
   export function moveByAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, servos[servo].currentAngle + angle);
   }
@@ -174,7 +182,7 @@ namespace mearm {
    * 让指定舵机回到中间位置
    */
   //% weight=70
-  //% blockId=move_to_centre block="让|%servo=MearmServo|回到中间位置"
+  //% blockId=move_to_centre block="|%servo=MearmServo|回到中间位置"
   export function moveToCentre(servo: MearmServo){
     resetServoAngle(servo);
   }
