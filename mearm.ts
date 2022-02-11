@@ -1,14 +1,3 @@
-enum MearmServo {
-  //% block="基座舵机"
-  Base = 0,
-  //% block="右边舵机"
-  Right = 1,
-  //% block="左边舵机"
-  Left = 2,
-  //% block="机械爪舵机"
-  Grip = 3
-}
-
 /**
  * 使用PCA9685芯片的Micro:bit扩展板控制MeArm机械臂
  */
@@ -25,7 +14,25 @@ namespace mearm {
 
   let initialized = false;
 
-  enum ServoPin {        
+  export enum MearmServo {
+    //% block="基座舵机"
+    Base = 0,
+    //% block="右边舵机"
+    Right = 1,
+    //% block="左边舵机"
+    Left = 2,
+    //% block="机械爪舵机"
+    Grip = 3
+  }
+  export enum Direction {        
+    //% block="逆时针"
+    counterclockwise = 0,
+    //% block="顺时针"
+    clockwise = 1,
+  
+  }
+  
+  export enum ServoPin {        
     S1 = 0,
     S2,
     S3,
@@ -34,14 +41,6 @@ namespace mearm {
     S6,
     S7,
     S8
-  }
-
-  enum Direction {        
-    //% block="逆时针"
-    counterclockwise = 0,
-    //% block="顺时针"
-    clockwise = 1,
-
   }
 
   function i2cwrite(addr: number, reg: number, value: number) {
@@ -173,7 +172,7 @@ namespace mearm {
    * 让指定舵机从当前位置转动一个角度
    */
   //% weight=80
-  //% blockId=move_by block="|%servo=MearmServo|转动|%angle|度"
+  //% blockId=move_by block="控制|%servo=MearmServo|转动|%angle|度"
   export function moveByAngle(servo: MearmServo, angle: number){
     setServoAngle(servo, servos[servo].currentAngle + angle);
   }
@@ -182,7 +181,7 @@ namespace mearm {
    * 让指定舵机回到中间位置
    */
   //% weight=70
-  //% blockId=move_to_centre block="|%servo=MearmServo|回到中间位置"
+  //% blockId=move_to_centre block="控制|%servo=MearmServo|回到中间位置"
   export function moveToCentre(servo: MearmServo){
     resetServoAngle(servo);
   }
