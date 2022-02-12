@@ -151,7 +151,7 @@ namespace mearm {
   //% weight=90
   //% blockGap=10
   //% minAgl.min=0 minAgl.max=180 maxAgl.min=0 maxAgl.max=180 defaultAngle.min=0 defaultAngle.max=180
-  //% blockId=config_servo block="配置 %servo=MearmServo 使用引脚 %pin=ServoPin |最小角度 %minAgl 最大角度 %maxAgl |初始角度 %defaultAngle 方向 %dir=Direction"
+  //% blockId=config_servo block="配置 %servo=MearmServo 使用引脚 %pin=ServoPin|最小角度 %minAgl 最大角度 %maxAgl|初始角度 %defaultAngle 方向 %dir=Direction"
   export function configServo(servo: MearmServo,pin: ServoPin, minAgl: number, maxAgl: number,defaultAngle: number,dir: Direction){
     let _servo = servos[servo];
     _servo.servo=pin;
@@ -184,6 +184,19 @@ namespace mearm {
     setServoAngle(servo, servos[servo].currentAngle + angle);
   }
 
+  /**
+   * 让所有舵机转到初始位置
+   */
+  //% weight=80
+  //% blockGap=10
+  //% blockId=reset_all block="所有舵机回到默认位置"
+  export function resetAllServos(){
+    moveToCentre(MearmServo.Base);
+    moveToCentre(MearmServo.Right);
+    moveToCentre(MearmServo.Left);
+    moveToCentre(MearmServo.Grip);
+  }
+  
   /**
    * 让指定舵机回到中间位置
    */

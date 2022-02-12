@@ -5,6 +5,20 @@
 
 ## API 说明
 
+* **configServo** - 配置MeArm各个舵机的参数
+
+```
+  mearm.configServo(MearmServo.Base,ServoPin.S1, minAngle, maxAngle,defaultAngle,direction);
+```
+
+
+* **resetAllServos** - 让所有舵机转到默认位置
+
+```
+  mearm.resetAllServos();
+```
+
+
 * **moveToAngle** - 转动指定舵机到一个绝对值角度
 
 ```
