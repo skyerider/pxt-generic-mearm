@@ -33,16 +33,21 @@ namespace mearm {
     S8
   }
 
+    //几何尺寸，L1、L2和L3的数值参考集合定义,mearm的源项目是以下数值
+    const L1 = 80;
+    const L2 = 80;
+    const L3 = 68;
+
+  const PI = 3.14159265359;
   const PCA9685_ADD = 0x40;
   const MODE1 = 0x00;
   const LED0_ON_L = 0x06;
   const LED0_ON_H = 0x07;
   const LED0_OFF_L = 0x08;
   const LED0_OFF_H = 0x09;
-
   const PRESCALE = 0xFE;
-
   let initialized = false;
+    let currentGesture = { "x": 0, "y": 0,"z": 0,"r":0,"theta":0 };
 
   function i2cwrite(addr: number, reg: number, value: number) {
     let buf = pins.createBuffer(2)
@@ -50,6 +55,108 @@ namespace mearm {
     buf[1] = value
     pins.i2cWriteBuffer(addr, buf)
   }
+
+    function cart2polar(a: number, b: number)
+    {
+        let rad=0.0;
+        let theta=0.0;
+        rad =Math.sqrt(a * a + b * b);
+        if (rad != 0){
+            let c = a / rad;
+            let s = b / rad;
+
+            if (s > 1){
+                s = 1;
+            } 
+            if (c > 1){
+                c = 1;
+            }
+            if (s < -1){
+                s = -1;
+            } 
+            if (c < -1){
+                c = -1;
+            } 
+            theta = Math.acos(c);
+            if (s < 0){
+                theta *= -1;
+            } 
+        }
+        return { "rad": rad,"theta":theta};
+
+    }
+    function polarToCartesian(theta:number, r:number){
+        currentGesture.r=r;
+        currentGesture.theta=theta;
+        let x = r * Math.sin(theta);
+        let y = r * Math.cos(theta);
+        return {"x":x,"y":y};
+    }
+    // Get angle from a triangle using cosine rule
+    function cosangle(opp:number, adj1:number, adj2:number)
+    {
+        // Cosine :
+        // C^2 = A^2 + B^2 - 2*A*B*cos(angle_AB)
+        // cos(angle_AB) = (A^2 + B^2 - C^2)/(2*A*B)
+        // C is opposite
+        // A, B are adjacent
+        let theta=0.0;
+        let den = 2 * adj1 * adj2;
+        if (den == 0){
+            return { "success": false, "theta": theta};
+        } else{
+            let c = (adj1 * adj1 + adj2 * adj2 - opp * opp) / den;
+            if (c > 1 || c < -1){
+                return { "success": false, "theta": theta };
+            } else{
+                theta = Math.acos(c);
+                return { "success": true, "theta": theta };
+            }
+        }
+    }
+
+    function iksolve(x:number, y:number, z:number)
+    {
+        let topDownView=cart2polar(y, x);
+        let r=topDownView.rad;
+        let th0=topDownView.theta;
+        r -= L3;
+        let inArmPlane=cart2polar(r, z);
+        let R=inArmPlane.rad;
+        let ang_P=inArmPlane.rad;
+
+        let armInnerAngle1 = cosangle(L2, L1, R);
+        let armInnerAngle2 = cosangle(R, L1, L2);
+        if(armInnerAngle1.success==false || armInnerAngle2.success==false){
+            return { success: false, "a0": 0, "a1": 0, "a2": 0};
+        }else{
+            let B=armInnerAngle1.theta;
+            let C=armInnerAngle2.theta;
+            let a0 = th0;
+            let a1 = ang_P + B;
+            let a2 = C + a1 - PI;
+            return { success: true, "a0": a0, "a1": a1, "a2": a2 };
+        }
+    }
+
+    function getX(){
+        return currentGesture.x;
+    }
+
+    function getY(){
+        return currentGesture.y;
+    }
+
+    function getZ(){
+        return currentGesture.z
+    }
+    function getR(){
+        return currentGesture.r;
+    }
+
+    function getTheta(){
+        return currentGesture.theta;
+    }
 
   function i2ccmd(addr: number, value: number) {
       let buf = pins.createBuffer(1)
@@ -105,6 +212,50 @@ namespace mearm {
     {minAngle: 30,  maxAngle: 160, currentAngle: 90, centerAngle: 90, servo: ServoPin.S3,  direction: Direction.clockwise},
     {minAngle: 0,   maxAngle: 180,  currentAngle: 90, centerAngle: 90, servo: ServoPin.S4,  direction: Direction.clockwise}
   ];
+
+    //使用反向动力学的方式让爪子移动到指定位置 
+    function goDirectlyTo(x: number, y: number, z: number) {
+        let solveResult = iksolve(x, y, z);
+        if(solveResult.success){
+            moveToAngle(MearmServo.Base, solveResult.a0);
+            moveToAngle(MearmServo.Right, solveResult.a1);
+            moveToAngle(MearmServo.Left, solveResult.a2);
+            currentGesture.x=x;
+            currentGesture.y=y;
+            currentGesture.z=z;
+        }
+    }
+
+    //让爪子平滑移动到指定位置 
+    function gotoPoint(x: number, y: number, z: number) {
+        //起始点 - 当前点
+        let x0 = currentGesture.x;
+        let y0 = currentGesture.y;
+        let z0 = currentGesture.z;
+        let dist = Math.sqrt((x0 - x) * (x0 - x) + (y0 - y) * (y0 - y) + (z0 - z) * (z0 - z));
+        let step = 10;
+        for (let i = 0; i < dist; i += step) {
+            goDirectlyTo(x0 + (x - x0) * i / dist, y0 + (y - y0) * i / dist, z0 + (z - z0) * i / dist);
+            basic.pause(50);
+        }
+        goDirectlyTo(x, y, z);
+        basic.pause(50);
+    }
+
+    function gotoPointCylinder(theta: number, r: number, z: number){
+        let v=polarToCartesian(theta, r);        
+        gotoPoint(v.x, v.y, z);
+    }
+
+    function goDirectlyToCylinder(theta: number, r: number,z: number){
+        let v=polarToCartesian(theta, r);
+        goDirectlyTo(v.x, v.y, z);
+    }
+
+    //检查机械爪是否可以到达指定点
+    function isReachable(x: number, y: number, z: number) {
+        return (iksolve(x, y, z).success);
+    }
 
   function setServoAngle(servo: MearmServo, angle: number){
     let _servo = servos[servo];
@@ -254,5 +405,14 @@ namespace mearm {
   export function closeGrip(){
     moveServoToMin(MearmServo.Grip);
   }
+    /**
+     * 使用反向动力学控制机械爪移动
+     */
+    //% weight=30
+    //% blockGap=10
+    //% blockId=move_grip_to block="机械爪移动到位置:x|%x|y|%y|z|%y|"
+    export function moveGripTo(x: number, y: number, z: number) {
+        gotoPoint(x,y,z);
+    }
 
 }
