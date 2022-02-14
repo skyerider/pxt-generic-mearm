@@ -11,10 +11,17 @@
         "mearm.ts",
         "pxt.json",
         "_locales/zh-cn/MeArm-strings.json"
-
     ],
     "testFiles": [
         "tests.ts"
     ],
-    "public": true
+    "public": true,
+    "targetVersions": {
+        "target": "4.0.17",
+        "targetId": "microbit"
+    },
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj"
 }

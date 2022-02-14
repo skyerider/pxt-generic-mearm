@@ -103,7 +103,7 @@ namespace mearm {
     {minAngle: 0,   maxAngle: 179, currentAngle: 90, centerAngle: 90, servo: ServoPin.S1,  direction: Direction.clockwise},
     {minAngle: 0,   maxAngle: 135, currentAngle: 90, centerAngle: 90, servo: ServoPin.S2,  direction: Direction.clockwise},
     {minAngle: 30,  maxAngle: 160, currentAngle: 90, centerAngle: 90, servo: ServoPin.S3,  direction: Direction.clockwise},
-    {minAngle: 0,   maxAngle: 89,  currentAngle: 90, centerAngle: 90, servo: ServoPin.S4,  direction: Direction.clockwise}
+    {minAngle: 0,   maxAngle: 180,  currentAngle: 90, centerAngle: 90, servo: ServoPin.S4,  direction: Direction.clockwise}
   ];
 
   function setServoAngle(servo: MearmServo, angle: number){
@@ -189,7 +189,7 @@ namespace mearm {
    */
   //% weight=80
   //% blockGap=10
-  //% blockId=reset_all block="所有舵机回到默认位置"
+  //% blockId=reset_all block="所有舵机转初始位置"
   export function resetAllServos(){
     moveToCentre(MearmServo.Base);
     moveToCentre(MearmServo.Right);
@@ -197,6 +197,37 @@ namespace mearm {
     moveToCentre(MearmServo.Grip);
   }
   
+    /**
+     * 执行舵机测试动作序列
+     */
+    //% weight=10
+    //% blockGap=10
+    //% blockId=test_sequences block="执行自动测试"
+    export function testSequences(repeat:Number) {
+        resetAllServos();
+        basic.pause(2000);
+        for(let r=0;r<repeat;r++){
+            moveToAngle(MearmServo.Base,30);
+            basic.pause(500);
+            moveToAngle(MearmServo.Right, 30);
+            basic.pause(500);
+            moveToAngle(MearmServo.Left, 30);
+            basic.pause(500);
+            moveToAngle(MearmServo.Grip, 30);
+            basic.pause(2000);
+            moveToAngle(MearmServo.Base, 150);
+            basic.pause(500);
+            moveToAngle(MearmServo.Right, 150);
+            basic.pause(500);
+            moveToAngle(MearmServo.Left, 150);
+            basic.pause(500);
+            moveToAngle(MearmServo.Grip, 150);
+            basic.pause(2000);
+            resetAllServos();
+            basic.pause(1000);
+        }
+    }
+
   /**
    * 让指定舵机回到中间位置
    */
